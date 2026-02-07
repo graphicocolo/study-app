@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>02-01 税込価格計算</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js" defer></script>
+</head>
+<body>
+  <div class="m-auto max-w-sm p-4">
+    <h1 class="text-2xl font-bold mb-6">02-01 税込価格計算</h1>
+    <form id="tax-form" class="form grid gap-6">
+      <div class="grid gap-2 mb-1">
+        <label for="price" class="form-label text-base">税抜価格 (円)</label>
+        <input type="text" class="form-control" id="price" required placeholder="税抜価格を入力してください">
+      </div>
+      <div class="grid gap-2 mb-1">
+        <label for="tax-rate" class="form-label text-base">消費税率 (%)</label>
+        <select id="tax-rate" class="select w-[180px]">
+          <option value="8">8%</option>
+          <option value="10">10%</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary font-bold text-base bg-sky-600">計算する</button>
+      <button type="reset" class="btn btn-secondary font-bold text-base text-white bg-neutral-500">リセット</button>
+    </form>
+    <div id="result" class="mt-6 p-4 border border-sky-300 rounded">
+      <h2 class="text-xl font-semibold mb-2 text-center text-sky-600">結果</h2>
+      <p id="tax-in-price" class="text-xl text-center font-bold"></p>
+  </div>
+  <script src="main.js"></script>
+</body>
+</html>
