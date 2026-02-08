@@ -14,7 +14,7 @@
     <form id="tax-form" class="form grid gap-6">
       <div class="grid gap-2 mb-1">
         <label for="price" class="form-label text-base">税抜価格 (円)</label>
-        <input type="text" class="form-control" id="price" required placeholder="税抜価格を入力してください">
+        <input type="number" class="form-control" id="price" min="1" step="1" required>
       </div>
       <div class="grid gap-2 mb-1">
         <label for="tax-rate" class="form-label text-base">消費税率 (%)</label>
