@@ -28,4 +28,4 @@ TailwindCSS と Basecoat を使用
 - [Element: input イベント](https://developer.mozilla.org/ja/docs/Web/API/Element/input_event)
 - [Number.parseInt()](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Number/parseInt)
 - [Number.prototype.toFixed()](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed)
-- []()
+- [べき乗演算子 (**)](https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Operators/Exponentiation)

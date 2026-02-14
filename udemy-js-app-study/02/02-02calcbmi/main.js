@@ -13,6 +13,12 @@
 // プラスアルファの機能
 // リセットボタンを押すと入力欄と結果欄がクリアされる
 
+// コードの構成
+// 1. HTMLの要素を取得、初期状態を設定する
+// 2. バリデーションを設定する
+// 3. フォームの送信イベントをキャッチして、BMIを計算して表示する
+// 4. フォームのリセットイベントをキャッチして、結果欄をクリアする
+
 // HTMLの要素を取得
 const heightInput = document.querySelector("#height");
 const weightInput = document.querySelector("#weight");
