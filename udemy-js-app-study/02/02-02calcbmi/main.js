@@ -22,26 +22,20 @@ const bmiResult = document.querySelector("#bmi-result");
 // 初期状態では、結果欄は「ー」と表示
 bmiResult.textContent = "ー";
 
-// 入力欄のバリデーションメッセージ設定
-heightInput.addEventListener("input", () => {
-  if (heightInput.validity.valueMissing) {
-    heightInput.setCustomValidity("身長を入力してください");
-  } else if (heightInput.validity.rangeUnderflow) {
-    heightInput.setCustomValidity("身長は1以上の数値を入力してください");
+// バリデーションメッセージを設定する関数
+function setValidationMessage(element, fieldName) {
+  if (element.validity.valueMissing) {
+    element.setCustomValidity(`${fieldName}を入力してください`);
+  } else if (element.validity.rangeUnderflow) {
+    element.setCustomValidity(`${fieldName}は1以上の数値を入力してください`);
   } else {  
-    heightInput.setCustomValidity(""); // バリデーションOK時は空文字にリセット
+    element.setCustomValidity(""); // バリデーションOK時は空文字にリセット
   }
-});
+}
 
-weightInput.addEventListener("input", () => {
-  if (weightInput.validity.valueMissing) {
-    weightInput.setCustomValidity("体重を入力してください");
-  } else if (weightInput.validity.rangeUnderflow) {
-    weightInput.setCustomValidity("体重は1以上の数値を入力してください");
-  } else {  
-    weightInput.setCustomValidity(""); // バリデーションOK時は空文字にリセット
-  }
-});
+// 入力イベントリスナーを追加して、リアルタイムでバリデーションメッセージを更新
+heightInput.addEventListener("input", () => setValidationMessage(heightInput, "身長"));
+weightInput.addEventListener("input", () => setValidationMessage(weightInput, "体重"));
 
 // フォームが送信されたときの処理
 bmiForm.addEventListener("submit", (event) => {
@@ -52,7 +46,7 @@ bmiForm.addEventListener("submit", (event) => {
   // ブラウザ標準のバリデーションチェック
   if (!bmiForm.checkValidity()) {
     bmiForm.reportValidity(); // ツールチップでエラーメッセージを表示
-    return; // 早期リターン 条件を満たさない場合に早めに return して処理を抜ける」パターン
+    return; // 早期リターン 「 条件を満たさない場合に早めに return して処理を抜ける」パターン
   }
 
   // 入力値を取得

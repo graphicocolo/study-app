@@ -14,11 +14,11 @@
     <form id="bmi-form" class="form grid gap-6">
       <div class="grid gap-2 mb-1">
         <label for="height" class="form-label text-base">身長 (cm)</label>
-        <input type="number" class="form-control" id="height" min="1" step="1" required>
+        <input type="number" class="form-control" id="height" min="1" max="300" step="1" required>
       </div>
       <div class="grid gap-2 mb-1">
         <label for="weight" class="form-label text-base">体重 (kg)</label>
-        <input type="number" class="form-control" id="weight" min="1" step="1" required>
+        <input type="number" class="form-control" id="weight" min="1" max="500" step="1" required>
       </div>
       <button type="submit" class="btn btn-primary font-bold text-base bg-sky-600">計算する</button>
       <button type="reset" class="btn btn-secondary font-bold text-base text-white bg-neutral-500">リセット</button>
@@ -26,6 +26,7 @@
     <div id="result" class="mt-6 p-4 border border-sky-300 rounded">
       <h2 class="text-lg font-semibold mb-2 text-center text-sky-600">BMI</h2>
       <p id="bmi-result" class="text-2xl text-center font-bold text-sky-600"></p>
+    </div>
   </div>
   <script src="main.js"></script>
 </body>
