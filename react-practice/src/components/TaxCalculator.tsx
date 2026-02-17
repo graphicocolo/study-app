@@ -21,10 +21,14 @@ export default function TaxCalculator() {
   const [taxRate, setTaxRate] = useState('8')
   const [totalPrice, setTotalPrice] = useState('ー')
   const [error, setError] = useState<string | null>(null)
-  const [isTouched, setIsTouched] = useState(false)
+  const [isTouched, setIsTouched] = useState(false) // 「一度でもバリデーションが実行されたかどうか」の状態
+  // true になるタイミング
+  // onBlur — フォーカスが外れた時
+  // handleSubmit — 送信ボタンを押した時（先ほどの修正）
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
+    setIsTouched(true)
     const result = validateInput(price)
     if ('error' in result) {
       setError(result.error)
@@ -36,7 +40,7 @@ export default function TaxCalculator() {
     setTotalPrice(calculatedTotalPrice.toLocaleString())
   }
 
-  function handleReset () {
+  const handleReset = () => {
     setPrice('')
     setTaxRate('8')
     setTotalPrice('ー')
@@ -44,10 +48,14 @@ export default function TaxCalculator() {
     setIsTouched(false)
   }
 
+  const validateAndSetError = (value: string) => {
+    const result = validateInput(value)
+    setError('error' in result ? result.error : null)
+  }
+
   return (
     <div className="mx-auto p-4 max-w-sm">
       <h1 className="text-2xl font-bold mb-4">消費税計算機</h1>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
       <form className="mb-4" onSubmit={handleSubmit} onReset={handleReset}>
         <label htmlFor="price" className="block text-base font-medium text-gray-700 mb-1">
           価格
@@ -62,17 +70,17 @@ export default function TaxCalculator() {
           onChange={(e) => {
             const value = e.target.value
             setPrice(value)
-            if (isTouched) {
-              const result = validateInput(value)
-              setError('error' in result ? result.error : null)
+            if (isTouched) { // 一度エラーが出た後に、ユーザーが値を修正している最中は、リアルタイムでエラーを更新する
+              // まだ触っていない段階では余計なエラーを出さず、一度エラーが出た後は修正に合わせてリアルタイムにフィードバックする
+              validateAndSetError(value)
             }
           }}
           onBlur={(e) => {
             setIsTouched(true)
-            const result = validateInput(e.target.value)
-            setError('error' in result ? result.error : null)
+            validateAndSetError(e.target.value)
           }}
         />
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         <label htmlFor="tax" className="block text-base font-medium text-gray-700 mt-4 mb-1">
           税率
         </label>
