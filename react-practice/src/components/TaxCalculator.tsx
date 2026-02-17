@@ -7,7 +7,7 @@ function validateInput(value: string): { price: number } | { error: string } {
   if (value.trim() === '') return { error: '価格を入力してください' } // 空文字
   const num = Number(value)
   if (Number.isNaN(num)) return { error: '有効な数値を入力してください' } // 数値でない
-  if (num <= 0) return { error: '1以上の数値を入力してください' }
+  if (num < 1) return { error: '1以上の数値を入力してください' }
   return { price: Math.floor(num) }
 }
 
@@ -50,7 +50,12 @@ export default function TaxCalculator() {
 
   const validateAndSetError = (value: string) => {
     const result = validateInput(value)
-    setError('error' in result ? result.error : null)
+    if ('error' in result) {
+      setError(result.error)
+      setTotalPrice('ー')
+    } else {
+      setError(null)
+    }
   }
 
   return (
