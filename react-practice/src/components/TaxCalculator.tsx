@@ -1,29 +1,14 @@
 import { useState } from 'react'
 
-// interface TaxCalculatorProps {
-//   price: number
-//   taxRate: number
-//   totalPrice: number
-// }
-
-// 入力値をバリデーションする関数 空値、非数
-function validateInput(value: string): string | null {
-  if (value.trim() === '') return '価格を入力してください' // 空値
-  if (Number.isNaN(Number(value))) return '有効な数値を入力してください' // 非数
-  return null  
-}
-
-// 文字列から数値に変換する関数
-function formatNumber(value: string): number {
-  const trimedValue = value.trim()
-  const numericValue = trimedValue.replace(/[^0-9]/g, '')
-  return parseInt(numericValue, 10)
-}
-
-// 数値をバリデーションする関数
-function validateNumber(value: number): string | null {
-  if (value <= 0) return '1以上の数値を入力してください' // 負数
-  return null
+// 文字列を受け取り、検証し、数値にして返す関数
+// 今回はtaxRateはセレクトボックスで固定されているため、priceのみ検証する
+// サーバーにデータを送る場合はサーバー側で必ず検証する
+function validateInput(value: string): { price: number } | { error: string } {
+  if (value.trim() === '') return { error: '価格を入力してください' } // 空文字
+  const num = Number(value)
+  if (Number.isNaN(num)) return { error: '有効な数値を入力してください' } // 数値でない
+  if (num <= 0) return { error: '1以上の数値を入力してください' }
+  return { price: Math.floor(num) }
 }
 
 // 税込計算を行う関数
@@ -36,31 +21,18 @@ export default function TaxCalculator() {
   const [taxRate, setTaxRate] = useState('8')
   const [totalPrice, setTotalPrice] = useState('ー')
   const [error, setError] = useState<string | null>(null)
-
-  // 価格のバリデーション
-  const validatePrice = (value: string): string | null => {
-    const inputError = validateInput(value)
-    if (inputError) return inputError
-
-    const formattedPrice = formatNumber(value)
-
-    const numberError = validateNumber(formattedPrice)
-    if (numberError) return numberError
-
-    return null
-  }
+  const [isTouched, setIsTouched] = useState(false)
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    const errorMsg = validatePrice(price)
-    if (errorMsg) {
-      setError(errorMsg)
+    const result = validateInput(price)
+    if ('error' in result) {
+      setError(result.error)
       setTotalPrice('ー')
       return
     }
-    setError('')
-    const formattedPrice = formatNumber(price)
-    const calculatedTotalPrice = calculateTotalPrice(formattedPrice, parseInt(taxRate, 10))
+    setError(null)
+    const calculatedTotalPrice = calculateTotalPrice(result.price, Number(taxRate))
     setTotalPrice(calculatedTotalPrice.toLocaleString())
   }
 
@@ -68,6 +40,8 @@ export default function TaxCalculator() {
     setPrice('')
     setTaxRate('8')
     setTotalPrice('ー')
+    setError(null)
+    setIsTouched(false)
   }
 
   return (
@@ -85,7 +59,19 @@ export default function TaxCalculator() {
           className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="例: 1000"
           value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          onChange={(e) => {
+            const value = e.target.value
+            setPrice(value)
+            if (isTouched) {
+              const result = validateInput(value)
+              setError('error' in result ? result.error : null)
+            }
+          }}
+          onBlur={(e) => {
+            setIsTouched(true)
+            const result = validateInput(e.target.value)
+            setError('error' in result ? result.error : null)
+          }}
         />
         <label htmlFor="tax" className="block text-base font-medium text-gray-700 mt-4 mb-1">
           税率
