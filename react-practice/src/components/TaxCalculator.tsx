@@ -6,29 +6,48 @@ import { useState } from 'react'
 //   totalPrice: number
 // }
 
+// 入力値をバリデーションする関数 空値、非数
+function validateInput(value: string): string | null {
+  if (value.trim() === '') return '価格を入力してください' // 空値
+  if (Number.isNaN(Number(value))) return '有効な数値を入力してください' // 非数
+  return null  
+}
+
+// 文字列から数値に変換する関数
+function formatNumber(value: string): number {
+  const trimedValue = value.trim()
+  const numericValue = trimedValue.replace(/[^0-9]/g, '')
+  return parseInt(numericValue, 10)
+}
+
+// 数値をバリデーションする関数
+function validateNumber(value: number): string | null {
+  if (value <= 0) return '1以上の数値を入力してください' // 負数
+  return null
+}
+
+// 税込計算を行う関数
+function calculateTotalPrice(price: number, taxRate: number): number {
+  return Math.floor(price + (price * taxRate / 100))
+}
+
 export default function TaxCalculator() {
   const [price, setPrice] = useState('')
   const [taxRate, setTaxRate] = useState('8')
   const [totalPrice, setTotalPrice] = useState('ー')
   const [error, setError] = useState<string | null>(null)
 
-  // 税込価格計算
-  const calculateTotalPrice = () => {
-    const priceValue = parseInt(price, 10)
-    const taxRateValue = parseInt(taxRate, 10)
-    const calculatedTotalPrice = Math.floor(priceValue + (priceValue * taxRateValue / 100))
-    setTotalPrice(calculatedTotalPrice.toLocaleString())
-  }
-
-  // 簡易バリデーション
+  // 価格のバリデーション
   const validatePrice = (value: string): string | null => {
-    // const numericValue = value.replace(/[^0-9]/g, '')
-    // setPrice(numericValue)
-    if (value.trim() === '') return '価格を入力してください' // 空値
-    if (isNaN(value)) return '有効な数値を入力してください' // 非数
-    if (value <= 0) return '1以上の数値を入力してください' // 負数
-    // if (!Number.isInteger(numericValue)) return '価格は整数でなければなりません' // 非整数
-    return null    
+    const inputError = validateInput(value)
+    if (inputError) return inputError
+
+    const formattedPrice = formatNumber(value)
+
+    const numberError = validateNumber(formattedPrice)
+    if (numberError) return numberError
+
+    return null
   }
 
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
@@ -40,7 +59,9 @@ export default function TaxCalculator() {
       return
     }
     setError('')
-    calculateTotalPrice()
+    const formattedPrice = formatNumber(price)
+    const calculatedTotalPrice = calculateTotalPrice(formattedPrice, parseInt(taxRate, 10))
+    setTotalPrice(calculatedTotalPrice.toLocaleString())
   }
 
   function handleReset () {
