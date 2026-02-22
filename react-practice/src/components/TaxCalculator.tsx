@@ -1,6 +1,6 @@
  import { useTaxCalculator } from '@/hooks/useTaxCalculator'
 
-export const TaxCalculator = () => {
+export default function TaxCalculator() {
   const { price, taxRate, totalPrice, error, handlePriceChange, handleTaxRateChange, handleBlur, handleSubmit, handleReset } = useTaxCalculator()
 
   return (
