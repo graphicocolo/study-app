@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>03 割り勘計算</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="m-auto max-w-sm p-4">
+    <h1 class="text-2xl font-bold mb-6">03 割り勘計算</h1>
+    <form id="split-form" class="form grid gap-6">
+      <div class="grid gap-2 mb-1">
+        <label for="total" class="form-label text-base">総額</label>
+        <input type="number" class="form-control" id="total" min="1" max="300" step="1" required>
+      </div>
+      <div class="grid gap-2 mb-1">
+        <label for="nop" class="form-label text-base">人数</label>
+        <input type="number" class="form-control" id="nop" min="1" max="500" step="1" required>
+      </div>
+      <button type="submit" class="btn btn-primary font-bold text-base bg-sky-600">計算する</button>
+      <button type="reset" class="btn btn-secondary font-bold text-base text-white bg-neutral-500">リセット</button>
+    </form>
+    <div id="result" class="mt-6 p-4 border border-sky-300 rounded">
+      <h2 class="text-lg font-semibold mb-2 text-center text-sky-600">支払い金額(一人当たり)</h2>
+      <p id="result-base" class="text-2xl text-center font-bold text-sky-600"></p>
+      <h2 class="text-lg font-semibold mb-2 text-center text-sky-600">支払い金額(端数負担者)</h2>
+      <p id="result-remainder" class="text-2xl text-center font-bold text-sky-600"></p>
+    </div>
+  </div>
+</body>
+</html>
