@@ -18,8 +18,8 @@ export default function SplitCalculator() {
           placeholder="例: 3000"
           value={total}
           // onChange={handleTotalChange} // カスタムフックにイベントを渡す
-          onChange={(e) => handleTotalChange(e.target.value)} // カスタムフックに文字列を渡す
-          onBlur={(e) => handleBlur(e.target.value)}
+          onChange={(e) => handleTotalChange(e.target.value, e.target.id)} // カスタムフックに文字列を渡す
+          onBlur={(e) => handleBlur(e.target.value, e.target.id)}
         />
         <label htmlFor="nop" className="block text-base font-medium text-gray-700 mt-4 mb-1">
           人数
@@ -32,11 +32,10 @@ export default function SplitCalculator() {
           placeholder="例: 3"
           value={nop}
           // onChange={handleNopChange} // カスタムフックにイベントを渡す
-          onChange={(e) => handleNopChange(e.target.value)} // カスタムフックに文字列を渡す
-          onBlur={(e) => handleBlur(e.target.value)}
+          onChange={(e) => handleNopChange(e.target.value, e.target.id)} // カスタムフックに文字列を渡す
+          onBlur={(e) => handleBlur(e.target.value, e.target.id)}
         />
         {error && <p className="text-red-500 mb-4">{error}</p>}
-        
         <button
           type="submit"
           className="mt-6 w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"

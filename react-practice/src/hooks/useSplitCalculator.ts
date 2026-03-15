@@ -32,11 +32,13 @@ export function useSplitCalculator() {
   // handleSubmit — 送信ボタンを押した時（先ほどの修正）
 
   // 入力値を検証し、エラーを設定する関数
-  const validateAndSetError = (value: string) => {
+  const validateAndSetError = (value: string, id: string) => {
     const result = validateInputToInteger(value)
-    if ('error' in result) {
+    if ('error' in result && id === 'total') {
       setError(result.error)
       setResultBase('ー')
+    } else if ('error' in result && id === 'nop') {
+      setError(result.error)
       setResultRemainder('ー')
     } else {
       setError(null)
@@ -46,28 +48,28 @@ export function useSplitCalculator() {
   // 総額の入力値が変更されたときのイベントハンドラー
   // 総額の入力値が変更されたときに、リアルタイムでエラーを更新するようにする
   // const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => { // イベントを受け取る書き方
-  const handleTotalChange = (value: string) => {
+  const handleTotalChange = (value: string, id: string) => {
     // const value = e.target.value // イベントを受け取る書き方の場合は、ここで値を取り出す必要がある
     setTotal(value)
     if (isTouched) { // 一度エラーが出た後に、ユーザーが値を修正している最中は、リアルタイムでエラーを更新する
       // まだ触っていない段階では余計なエラーを出さず、一度エラーが出た後は修正に合わせてリアルタイムにフィードバックする
-      validateAndSetError(value)
+      validateAndSetError(value, id)
     }
   }
 
   // 人数の変更イベントハンドラー
   // 人数が変更されたときに、リアルタイムでエラーを更新するようにする
-  const handleNopChange = (value: string) => {
+  const handleNopChange = (value: string, id: string) => {
     setNop(value)
     if (isTouched) {
-      validateAndSetError(value)
+      validateAndSetError(value, id)
     }
   }
 
   // 入力フィールドがフォーカスを失ったときのイベントハンドラー
-  const handleBlur = (value: string) => {
+  const handleBlur = (value: string, id: string) => {
     setIsTouched(true)
-    validateAndSetError(value)
+    validateAndSetError(value, id)
   }
 
   // フォームの送信イベントハンドラー
