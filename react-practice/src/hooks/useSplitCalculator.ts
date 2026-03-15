@@ -33,12 +33,13 @@ export function useSplitCalculator() {
   // handleSubmit — 送信ボタンを押した時（先ほどの修正）
 
   // 入力値を検証し、エラーを設定する関数
+  // このままだと、`validateAndSetError` は「どちらのフィールドか」を知る手段がなく、現在のエラー state で推測しようとしているのが誤り。さらに `handleBlur` も両フィールドで共用されたまま（`SplitCalculator.tsx:22, 37`）なので、呼び出し元のフィールドを特定できない。
   const validateAndSetError = (value: string) => {
     const result = validateInputToInteger(value)
-    if ('error' in result && totalError) {
+    if ('error' in result && totalError) { // ← totalError が null なら false 初回バリデーションが機能しない
       setTotalError(result.error)
       setResultBase('ー')
-    } else if ('error' in result && nopError) {
+    } else if ('error' in result && nopError) { // ← nopError が null なら false 初回バリデーションが機能しない
       setNopError(result.error)
       setResultRemainder('ー')
     } else {
