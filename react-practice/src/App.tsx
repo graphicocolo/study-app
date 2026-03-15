@@ -1,11 +1,13 @@
 import { useState } from 'react'
 import TaxCalculator from '@/components/TaxCalculator'
 import BmiCalculator from '@/components/BmiCalculator'
+import SplitCalculator from '@/components/SplitCalculator'
 
 // option を追加するとき VIEWS だけ変えればよい → 一元管理できる
 const VIEWS = [
     { value: 'TaxCalculator', label: '税込価格計算' },
     { value: 'BmiCalculator', label: 'BMI計算' },
+    { value: 'SplitCalculator', label: '割り勘計算' },
   ] as const // as const をつけるとリテラル型になる（value と label は文字列のまま、string にはならない）
 type ViewType = typeof VIEWS[number]['value']
 // ViewType は 'TaxCalculator' | 'BmiCalculator' のどちらかの型になる
@@ -33,7 +35,7 @@ function App() {
             ))}
           </select>
       </div>
-      {showElement === 'TaxCalculator' ? <TaxCalculator /> : <BmiCalculator />}
+      {showElement === 'BmiCalculator' ? <BmiCalculator /> : showElement === 'SplitCalculator' ? <SplitCalculator /> : <TaxCalculator /> }
     </div>
   )
 }
