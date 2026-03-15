@@ -10,10 +10,9 @@ const VIEWS = [
     { value: 'SplitCalculator', label: '割り勘計算' },
   ] as const // as const をつけるとリテラル型になる（value と label は文字列のまま、string にはならない）
 type ViewType = typeof VIEWS[number]['value']
-// ViewType は 'TaxCalculator' | 'BmiCalculator' のどちらかの型になる
 // VIEWS            → オブジェクトの配列
 // VIEWS[number]    → 配列の各オブジェクト  { value: '...', label: '...' }
-// VIEWS[number]['value'] → 各オブジェクトの value プロパティだけ 'TaxCalculator' | 'BmiCalculator'
+// VIEWS[number]['value'] → 各オブジェクトの value プロパティだけ
 const isView = (v: string): v is ViewType => VIEWS.some((view) => view.value === v) // 文字列 v が VIEWS の value のどれかと一致するかをチェックする関数
 
 function App() {

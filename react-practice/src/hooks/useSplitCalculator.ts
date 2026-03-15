@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 // 文字列を受け取り、検証し、数値にして返す関数
 // サーバーにデータを送る場合はサーバー側で必ず検証する
 function validateInputToInteger(value: string): { validatedValue: number } | { error: string } {
-  if (value.trim() === '') return { error: '価格を入力してください' } // 空文字
+  if (value.trim() === '') return { error: '値を入力してください' } // 空文字
   const num = Number(value) // Number() は数値に変換できない文字列を渡すと NaN を返す
   if (Number.isNaN(num)) return { error: '有効な数値を入力してください' } // 数値でない
   if (num < 1) return { error: '1以上の数値を入力してください' } // 0以下
@@ -33,46 +33,42 @@ export function useSplitCalculator() {
   // handleSubmit — 送信ボタンを押した時（先ほどの修正）
 
   // 入力値を検証し、エラーを設定する関数
-  // このままだと、`validateAndSetError` は「どちらのフィールドか」を知る手段がなく、現在のエラー state で推測しようとしているのが誤り。さらに `handleBlur` も両フィールドで共用されたまま（`SplitCalculator.tsx:22, 37`）なので、呼び出し元のフィールドを特定できない。
-  const validateAndSetError = (value: string) => {
+  const validateField = (
+    value: string,
+    setError: (error: string | null) => void,
+    resetResult: () => void
+  ) => {
     const result = validateInputToInteger(value)
-    if ('error' in result && totalError) { // ← totalError が null なら false 初回バリデーションが機能しない
-      setTotalError(result.error)
-      setResultBase('ー')
-    } else if ('error' in result && nopError) { // ← nopError が null なら false 初回バリデーションが機能しない
-      setNopError(result.error)
-      setResultRemainder('ー')
+    if ('error' in result) {
+      setError(result.error)
+      resetResult()
     } else {
-      setTotalError(null)
-      setNopError(null)
+      setError(null)
     }
   }
 
   // 総額の入力値が変更されたときのイベントハンドラー
   // 総額の入力値が変更されたときに、リアルタイムでエラーを更新するようにする
-  // const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => { // イベントを受け取る書き方
   const handleTotalChange = (value: string) => {
-    // const value = e.target.value // イベントを受け取る書き方の場合は、ここで値を取り出す必要がある
     setTotal(value)
-    if (isTouched) { // 一度エラーが出た後に、ユーザーが値を修正している最中は、リアルタイムでエラーを更新する
-      // まだ触っていない段階では余計なエラーを出さず、一度エラーが出た後は修正に合わせてリアルタイムにフィードバックする
-      validateAndSetError(value)
-    }
+    if (isTouched) validateField(value, setTotalError, () => setResultBase('ー'))
   }
-
   // 人数の変更イベントハンドラー
   // 人数が変更されたときに、リアルタイムでエラーを更新するようにする
   const handleNopChange = (value: string) => {
     setNop(value)
-    if (isTouched) {
-      validateAndSetError(value)
-    }
+    if (isTouched) validateField(value, setNopError, () => setResultRemainder('ー'))
   }
 
-  // 入力フィールドがフォーカスを失ったときのイベントハンドラー
-  const handleBlur = (value: string) => {
+  // 総額の入力フィールドがフォーカスを失ったときのイベントハンドラー
+  const handleBlurTotal = (value: string) => {
     setIsTouched(true)
-    validateAndSetError(value)
+    validateField(value, setTotalError, () => setResultBase('ー'))
+  }
+  // 人数の入力フィールドがフォーカスを失ったときのイベントハンドラー
+  const handleBlurNop = (value: string) => {
+    setIsTouched(true)
+    validateField(value, setNopError, () => setResultRemainder('ー'))
   }
 
   // フォームの送信イベントハンドラー
@@ -84,12 +80,14 @@ export function useSplitCalculator() {
     if ('error' in result) {
       setTotalError(result.error)
       setResultBase('ー')
+      setResultRemainder('ー')
       return
     }
     const resultNop = validateInputToInteger(nop)
     if ('error' in resultNop) {
       setNopError(resultNop.error)
       setResultRemainder('ー')
+      setResultBase('ー')
       return
     }
     setTotalError(null)
@@ -120,7 +118,8 @@ export function useSplitCalculator() {
     nopError,
     handleTotalChange,
     handleNopChange,
-    handleBlur,
+    handleBlurTotal,
+    handleBlurNop,
     handleSubmit,
     handleReset
   }

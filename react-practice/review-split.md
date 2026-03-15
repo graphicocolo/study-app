@@ -128,6 +128,53 @@ const handleBlurTotal = (value: string) => { setIsTouched(true); validateTotal(v
 const handleBlurNop = (value: string) => { setIsTouched(true); validateNop(value) }
 ```
 
+**補足: `validateTotal` / `validateNop` の代わりに汎用関数にする方法**
+
+`validateTotal` と `validateNop` は内部ロジックがほぼ同じなため、**セッター関数を引数で渡す**汎用関数にして使い回すことができる。
+
+```ts
+const validateField = (
+  value: string,
+  setError: (error: string | null) => void,
+  resetResult: () => void
+) => {
+  const result = validateInputToInteger(value)
+  if ('error' in result) {
+    setError(result.error)
+    resetResult()
+  } else {
+    setError(null)
+  }
+}
+
+// 呼び出し側
+const handleTotalChange = (value: string) => {
+  setTotal(value)
+  if (isTouched) validateField(value, setTotalError, () => setResultBase('ー'))
+}
+const handleNopChange = (value: string) => {
+  setNop(value)
+  if (isTouched) validateField(value, setNopError, () => setResultRemainder('ー'))
+}
+const handleBlurTotal = (value: string) => {
+  setIsTouched(true)
+  validateField(value, setTotalError, () => setResultBase('ー'))
+}
+const handleBlurNop = (value: string) => {
+  setIsTouched(true)
+  validateField(value, setNopError, () => setResultRemainder('ー'))
+}
+```
+
+以前の壊れた `validateAndSetError` との違い：
+
+| | 以前の実装 | この実装 |
+|---|---|---|
+| どちらのフィールドか判断する方法 | **現在の state 値**（`totalError`, `nopError`）で推測 | **セッター関数を引数**として受け取る |
+| 初回バリデーション | state が null → 条件 false → 動かない | 引数で渡すので state に関係なく動く |
+
+「どの state を操作するか」を呼び出し側が明示的に指定するため、関数自身は判断不要になっている。`value` だけを引数にしていた旧実装は「どちらのフィールドか」の情報がなく state で推測しようとしたのが根本的な誤りだった。
+
 ---
 
 ### 2. `handleSubmit` での result のリセットが非対称
