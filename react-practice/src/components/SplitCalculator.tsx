@@ -1,7 +1,7 @@
 import { useSplitCalculator } from "@/hooks/useSplitCalculator"
 
 export default function SplitCalculator() {
-  const { total, nop, resultBase, resultRemainder, error, handleTotalChange, handleNopChange, handleBlur, handleSubmit, handleReset } = useSplitCalculator()
+  const { total, nop, resultBase, resultRemainder, totalError, nopError, handleTotalChange, handleNopChange, handleBlur, handleSubmit, handleReset } = useSplitCalculator()
 
   return (
     <div className="mx-auto p-4 max-w-sm">
@@ -18,9 +18,10 @@ export default function SplitCalculator() {
           placeholder="例: 3000"
           value={total}
           // onChange={handleTotalChange} // カスタムフックにイベントを渡す
-          onChange={(e) => handleTotalChange(e.target.value, e.target.id)} // カスタムフックに文字列を渡す
-          onBlur={(e) => handleBlur(e.target.value, e.target.id)}
+          onChange={(e) => handleTotalChange(e.target.value)} // カスタムフックに文字列を渡す
+          onBlur={(e) => handleBlur(e.target.value)}
         />
+        {totalError && <p className="text-red-500 mb-4">{totalError}</p>}
         <label htmlFor="nop" className="block text-base font-medium text-gray-700 mt-4 mb-1">
           人数
         </label>
@@ -32,10 +33,10 @@ export default function SplitCalculator() {
           placeholder="例: 3"
           value={nop}
           // onChange={handleNopChange} // カスタムフックにイベントを渡す
-          onChange={(e) => handleNopChange(e.target.value, e.target.id)} // カスタムフックに文字列を渡す
-          onBlur={(e) => handleBlur(e.target.value, e.target.id)}
+          onChange={(e) => handleNopChange(e.target.value)} // カスタムフックに文字列を渡す
+          onBlur={(e) => handleBlur(e.target.value)}
         />
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {nopError && <p className="text-red-500 mb-4">{nopError}</p>}
         <button
           type="submit"
           className="mt-6 w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"

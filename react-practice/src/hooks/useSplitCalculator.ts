@@ -25,51 +25,53 @@ export function useSplitCalculator() {
   const [nop, setNop] = useState('')
   const [resultBase, setResultBase] = useState('ー')
   const [resultRemainder, setResultRemainder] = useState('ー')
-  const [error, setError] = useState<string | null>(null)
+  const [totalError, setTotalError] = useState<string | null>(null)
+  const [nopError, setNopError] = useState<string | null>(null)
   const [isTouched, setIsTouched] = useState(false) // 「一度でもバリデーションが実行されたかどうか」の状態
   // true になるタイミング
   // onBlur — フォーカスが外れた時
   // handleSubmit — 送信ボタンを押した時（先ほどの修正）
 
   // 入力値を検証し、エラーを設定する関数
-  const validateAndSetError = (value: string, id: string) => {
+  const validateAndSetError = (value: string) => {
     const result = validateInputToInteger(value)
-    if ('error' in result && id === 'total') {
-      setError(result.error)
+    if ('error' in result && totalError) {
+      setTotalError(result.error)
       setResultBase('ー')
-    } else if ('error' in result && id === 'nop') {
-      setError(result.error)
+    } else if ('error' in result && nopError) {
+      setNopError(result.error)
       setResultRemainder('ー')
     } else {
-      setError(null)
+      setTotalError(null)
+      setNopError(null)
     }
   }
 
   // 総額の入力値が変更されたときのイベントハンドラー
   // 総額の入力値が変更されたときに、リアルタイムでエラーを更新するようにする
   // const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => { // イベントを受け取る書き方
-  const handleTotalChange = (value: string, id: string) => {
+  const handleTotalChange = (value: string) => {
     // const value = e.target.value // イベントを受け取る書き方の場合は、ここで値を取り出す必要がある
     setTotal(value)
     if (isTouched) { // 一度エラーが出た後に、ユーザーが値を修正している最中は、リアルタイムでエラーを更新する
       // まだ触っていない段階では余計なエラーを出さず、一度エラーが出た後は修正に合わせてリアルタイムにフィードバックする
-      validateAndSetError(value, id)
+      validateAndSetError(value)
     }
   }
 
   // 人数の変更イベントハンドラー
   // 人数が変更されたときに、リアルタイムでエラーを更新するようにする
-  const handleNopChange = (value: string, id: string) => {
+  const handleNopChange = (value: string) => {
     setNop(value)
     if (isTouched) {
-      validateAndSetError(value, id)
+      validateAndSetError(value)
     }
   }
 
   // 入力フィールドがフォーカスを失ったときのイベントハンドラー
-  const handleBlur = (value: string, id: string) => {
+  const handleBlur = (value: string) => {
     setIsTouched(true)
-    validateAndSetError(value, id)
+    validateAndSetError(value)
   }
 
   // フォームの送信イベントハンドラー
@@ -79,17 +81,18 @@ export function useSplitCalculator() {
     setIsTouched(true)
     const result = validateInputToInteger(total)
     if ('error' in result) {
-      setError(result.error)
+      setTotalError(result.error)
       setResultBase('ー')
       return
     }
     const resultNop = validateInputToInteger(nop)
     if ('error' in resultNop) {
-      setError(resultNop.error)
+      setNopError(resultNop.error)
       setResultRemainder('ー')
       return
     }
-    setError(null)
+    setTotalError(null)
+    setNopError(null)
     const calculatedBasePrice = calculateBasePrice(result.validatedValue, resultNop.validatedValue)
     setResultBase(calculatedBasePrice.toLocaleString())
     const calculatedRemainderPrice = calculateRemainderPrice(result.validatedValue, resultNop.validatedValue)
@@ -102,7 +105,8 @@ export function useSplitCalculator() {
     setNop('')
     setResultBase('ー')
     setResultRemainder('ー')
-    setError(null)
+    setTotalError(null)
+    setNopError(null)
     setIsTouched(false)
   }
 
@@ -111,7 +115,8 @@ export function useSplitCalculator() {
     nop,
     resultBase,
     resultRemainder,
-    error,
+    totalError,
+    nopError,
     handleTotalChange,
     handleNopChange,
     handleBlur,

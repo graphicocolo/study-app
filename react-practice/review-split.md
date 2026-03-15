@@ -21,6 +21,113 @@
 
 **対処**: エラー state を total/nop で分けるか、バリデーション関数に「どちらのフィールドか」を伝える。
 
+#### 修正レビュー（`id` を渡すアプローチ）
+
+`handleBlur(value, id)` として `e.target.id` を渡す修正を実施。方向性は正しいが、以下の問題が残っている。
+
+**残っている問題 1: `else` ブランチで無条件にエラーをクリアしてしまう**
+
+`useSplitCalculator.ts:43-45`:
+
+```ts
+} else {
+  setError(null)  // どちらのフィールドが valid でも無条件にエラーを消してしまう
+}
+```
+
+`id` チェックはエラーを「セットする」部分には効いているが、「クリアする」部分に効いていない。そのため修正前と同じ状況（valid な nop をブラーすると total のエラーが消える）が再現される。
+
+**残っている問題 2: フックが HTML の `id` 文字列に依存している**
+
+`useSplitCalculator.ts:37-42`:
+
+```ts
+if ('error' in result && id === 'total') { ... }
+else if ('error' in result && id === 'nop') { ... }
+```
+
+カスタムフック（ロジック層）が JSX の `id="total"` `id="nop"` という文字列を知っている状態になっている。JSX 側で `id` を変えるとフックが壊れる。フックは DOM の詳細に依存すべきではない。
+
+また、`handleTotalChange(value, id)` / `handleNopChange(value, id)` はそれぞれ total/nop 専用のハンドラーなのに `id` を受け取っており、引数が冗長になっている。
+
+**推奨する解決策**: エラー state を total/nop で分ける
+
+```ts
+const [totalError, setTotalError] = useState<string | null>(null)
+const [nopError, setNopError] = useState<string | null>(null)
+```
+
+こうすれば `id` を渡す必要がなくなり、フックが DOM に依存しなくなる。表示側も各フィールドの直下にそれぞれのエラーを表示できる。
+
+#### 修正レビュー（`totalError` / `nopError` に分けるアプローチ）
+
+`totalError` / `nopError` の state 分離・各フィールド直下へのエラー表示・`handleReset` / `handleSubmit` のエラークリアは適切。ただし `validateAndSetError` の内部ロジックに新たなバグが生まれている。
+
+**問題: `validateAndSetError` の条件分岐が機能しない**
+
+`useSplitCalculator.ts:38-47`:
+
+```ts
+const validateAndSetError = (value: string) => {
+  const result = validateInputToInteger(value)
+  if ('error' in result && totalError) {      // ← totalError が null なら false
+    setTotalError(result.error)
+  } else if ('error' in result && nopError) { // ← nopError が null なら false
+    setNopError(result.error)
+  } else {
+    setTotalError(null)
+    setNopError(null)
+  }
+}
+```
+
+total が空の状態で初めてフォーカスを外したとき：
+
+- `totalError` は `null`（まだ一度もエラーが出ていない）
+- `'error' in result && totalError` → `true && null` → **false**
+- `else` に入り `setTotalError(null)` → **エラーが一切セットされない**
+
+「既にエラーが存在する場合のみエラーをセットする」という条件になってしまっているため、初回バリデーションが機能しない。
+
+**根本原因**: `validateAndSetError` は「どちらのフィールドか」を知る手段がなく、現在のエラー state で推測しようとしているのが誤り。さらに `handleBlur` も両フィールドで共用されたまま（`SplitCalculator.tsx:22, 37`）なので、呼び出し元のフィールドを特定できない。
+
+**推奨する修正**: フィールドごとに独立した validate 関数を作り、それぞれのハンドラーから呼び分ける
+
+```ts
+const validateTotal = (value: string) => {
+  const result = validateInputToInteger(value)
+  if ('error' in result) {
+    setTotalError(result.error)
+    setResultBase('ー')
+  } else {
+    setTotalError(null)
+  }
+}
+
+const validateNop = (value: string) => {
+  const result = validateInputToInteger(value)
+  if ('error' in result) {
+    setNopError(result.error)
+    setResultRemainder('ー')
+  } else {
+    setNopError(null)
+  }
+}
+
+const handleTotalChange = (value: string) => {
+  setTotal(value)
+  if (isTouched) validateTotal(value)
+}
+
+const handleNopChange = (value: string) => {
+  setNop(value)
+  if (isTouched) validateNop(value)
+}
+
+const handleBlurTotal = (value: string) => { setIsTouched(true); validateTotal(value) }
+const handleBlurNop = (value: string) => { setIsTouched(true); validateNop(value) }
+```
+
 ---
 
 ### 2. `handleSubmit` での result のリセットが非対称
