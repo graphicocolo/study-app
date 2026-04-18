@@ -26,6 +26,7 @@ function listInsertData (data, listElement) {
 submitForm.addEventListener("submit", (event) => {
   event.preventDefault(); // フォームのデフォルトの送信を防止、ページ遷移を防止
   if (element.hasChildNodes()) element.replaceChildren() // 連打対策
+  // 上記が連打対策になる理由は、毎回まず中身を空にしてから新しいリストを生成するため、前のリストが残ることがないから。
   const menuList = document.createElement("ul") // HTML要素を生成
   element.append(menuList) // 生成した要素を挿入
   listInsertData(menuData, menuList)

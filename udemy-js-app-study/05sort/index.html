@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05 成績ソート</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-center">成績ソートアプリ</h1>
+    <form id="scoreForm">
+      <div class="m-auto form mb-8 md:max-w-md">
+        <p class="text-sm text-gray-500 mb-8">3教科のみの試験の場合、試験が行われなかった教科は0と入力してください</p>
+        <div class="flex flex-col gap-1 mb-4">
+          <label class="w-8 text-sm font-medium">国語</label>
+          <input type="number" name="kokugo" min="0" max="100" placeholder="0〜100" class="input p-2" id="kokugo">
+          <p id="kokugo-error" class="text-sm text-red-500"></p>
+        </div>
+        <div class="flex flex-col gap-1 mb-4">
+          <label class="w-8 text-sm font-medium">数学</label>
+          <input type="number" name="sugaku" min="0" max="100" placeholder="0〜100" class="input p-2" id="sugaku">
+          <p id="sugaku-error" class="text-sm text-red-500"></p>
+        </div>
+        <div class="flex flex-col gap-1 mb-4">
+          <label class="w-8 text-sm font-medium">社会</label>
+          <input type="number" name="shakai" min="0" max="100" placeholder="0〜100" class="input p-2" id="shakai">
+          <p id="shakai-error" class="text-sm text-red-500"></p>
+        </div>
+        <div class="flex flex-col gap-1 mb-4">
+          <label class="w-8 text-sm font-medium">理科</label>
+          <input type="number" name="rika" min="0" max="100" placeholder="0〜100" class="input p-2" id="rika">
+          <p id="rika-error" class="text-sm text-red-500"></p>
+        </div>
+        <div class="flex flex-col gap-1 mb-4">
+          <label class="w-8 text-sm font-medium">英語</label>
+          <input type="number" name="eigo" min="0" max="100" placeholder="0〜100" class="input p-2" id="eigo">
+          <p id="eigo-error" class="text-sm text-red-500"></p>
+        </div>
+      </div>
+      <div class="m-auto md:max-w-xs grid gap-4">
+        <button type="submit" class="btn btn-primary font-bold text-base bg-sky-600">並べ替える</button>
+        <button type="reset" class="btn btn-secondary font-bold text-base text-white bg-neutral-500">リセット</button>
+      </div>
+    </form>
+    <div id="result" class="m-auto grid md:grid-cols-2 md:max-w-3xl mt-6 gap-4">
+      <div class="rounded p-4 bg-blue-50">
+        <h2 class="text-xl font-semibold mb-2 text-center text-sky-600">降順</h2>
+        <div id="result-descending"></div>
+      </div>
+      <div class="rounded p-4 bg-blue-50">
+        <h2 class="text-xl font-semibold mb-2 text-center text-sky-600">昇順</h2>
+        <div id="result-ascending"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
