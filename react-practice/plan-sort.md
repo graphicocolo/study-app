@@ -136,6 +136,40 @@ src/
 
 ### Step 3：カスタムフック `useScoreSort.ts` を作る
 
+#### カスタムフックの「定型の骨格」
+
+```ts
+// ①使い回す定数（必要ならば）
+// ②汎用関数（必要ならば）フックの中に書くと、コンポーネントが再レンダリングされるたびに関数が再生成される
+// バリデーション関数は state を使わない純粋な関数なので、毎回作り直す意味がない
+// ③型定義（必要ならば）慣習としてフックの外・ファイルの上部に書くのが一般的
+export function useScoreSort() {
+  // ① useState（状態の定義）
+  // ② 派生値（state から計算するもの、useState 不要）
+  // ③ イベントハンドラ（const で関数を定義）
+  // ④ return（コンポーネントに渡す値・関数をまとめて返す）
+  return { ... } 
+}
+```
+
+この順番で書けば迷いません。
+
+いざ1人で書くとなると、うわーっとなって書けなかった...
+
+```txt
+以下のような疑問が押し寄せてきた...
+// 型定義は useScoreSort の外側に記述で大丈夫か（ただし慣習としてフックの外・ファイルの上部に書くのが一般的）
+// 2つのバリデーション関数は真偽値を返す作りで問題ないか
+// エラーをセットする関数を作成した方が良いか
+// どのようにフック内のスクリプトを組み立てて良いかわからない
+// フック内のスクリプトの定型の書き方ってあるのか、あれば教えて
+// この状態でまず何から進めれば良いか
+// - `handleChange(name, value)` → 入力値を更新 + エラークリア制御
+// - `handleBlur(name)` → バリデーション実行
+// - `handleSubmit` → ソートして結果を state に保存
+// - `handleReset` → 全 state を初期値に戻す
+```
+
 **3-1. `useState` で状態を定義する**
 
 ```ts
@@ -150,7 +184,7 @@ type SortedScore = { displayName: string; value: number };
 
 `validateNotEmpty` と `validateScoreRange` をそのまま純粋関数として移植する（DOMを引数にとらない形に変える）。
 
-**3-3. イベントハンドラを作る** ← **今ここを学習中**  🔥 現在地
+**3-3. イベントハンドラを作る**
 
 - `handleChange(name, value)` → 入力値を更新 + エラークリア制御
 - `handleBlur(name)` → バリデーション実行
@@ -163,7 +197,7 @@ type SortedScore = { displayName: string; value: number };
 
 フックから値とハンドラを受け取って JSX を書く。
 
-**4-1. フォーム部分**
+**4-1. フォーム部分** ← **今ここを学習中**  🔥 現在地
 
 `inputFields` 配列を `.map()` して `<input>` を生成する（`id` で個別管理しない）。
 
@@ -195,3 +229,46 @@ type SortedScore = { displayName: string; value: number };
 - Step 3 → 4 の順で進める（ロジック先、UI後）
 - 各ステップで「ここどう書けばいいか」「この設計でいいか」を Claude に相談しながら進めてください
 - 特に **Step 3-1（state 設計）** は実装前に相談すると後が楽です
+
+---
+
+### バリデーション関数について
+
+#### 記述場所
+
+汎用関数（`validateNotEmpty` など）と型定義（`type Score` など）はフックの**外**に書く。
+
+| | フックの外 | フックの中 |
+|---|---|---|
+| 汎用関数 | 1回だけ定義される ✅ | 再レンダリングのたびに再生成される |
+| 型定義 | export しやすい ✅ | 動作は同じだが export できない |
+
+state を使わない純粋な関数は、毎回作り直す意味がないのでフックの外に置く。
+
+#### true/false型 vs Result型
+
+現在の `useScoreSort.ts` は **true/false型**、`useBmiCalculator.ts` は **Result型** で書かれている。
+
+**true/false型（現在）**
+
+```ts
+function validateNotEmpty(value: string) { ... } // false = NG
+function validateScoreRange(value: string) { ... } // false = NG
+// エラーメッセージは handleBlur 側で書く
+```
+
+**Result型（useBmiCalculator 方式）**
+
+```ts
+function validateScore(value: string): { value: number } | { error: string } {
+  if (value.trim() === '') return { error: '点数が空です' }
+  const num = parseInt(value, 10)
+  if (isNaN(num) || num < 0 || num > 100) return { error: '0以上100以下の数字を入力してください' }
+  return { value: num }
+}
+// エラーメッセージが関数の中にまとまる
+// handleSubmit での parseInt の重複もなくなる
+```
+
+どちらも正解。現在の true/false 型の唯一の弱点は `handleSubmit` で `parseInt` を重複して呼んでいる点。Result型にするとそれが解消される。
+
