@@ -24,7 +24,7 @@ type Score = {
   error: string;
 }
 
-type SortedScore = { displayName: string; value: number }
+type SortedScore = { subject: string; displayName: string; value: number }
 
 export function useScoreSort() {
   const [scores, setScores] = useState<Score[]>([
@@ -41,10 +41,22 @@ export function useScoreSort() {
   const isSubmitEnable = scores.every(s => s.value.trim() !== '' && s.error === '')
 
   const handleChange = (subject: string, value: string) => {
+    // ↓リアルタイムバリデーションなしバージョン
+    // setScores(prev =>
+    //   prev.map(score =>
+    //     score.subject === subject ? {...score, value, error: ''} : score
+    //   )
+    // )
+    // ↓リアルタイムバリデーションありバージョン
+    // 空文字チェックなし（空欄で常にエラー文が表示されてしまうため）
     setScores(prev =>
-      prev.map(score =>
-        score.subject === subject ? {...score, value, error: ''} : score
-      )
+      prev.map(score => {
+        if (score.subject !== subject) return score
+        const error = value.trim() !== '' && !validateScoreRange(value)
+          ? '0以上100以下の数字を入力してください'
+          : ''
+        return {...score, value, error}
+      })
     )
   }
 
@@ -62,6 +74,7 @@ export function useScoreSort() {
   const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
     const sortable: SortedScore[] = scores.map(s => ({
+      subject: s.subject,
       displayName: s.displayName,
       value: parseInt(s.value, 10)
     }))

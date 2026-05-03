@@ -1,19 +1,29 @@
-import { useState } from 'react'
+import { type ReactElement, useState } from 'react'
 import TaxCalculator from '@/components/TaxCalculator'
 import BmiCalculator from '@/components/BmiCalculator'
 import SplitCalculator from '@/components/SplitCalculator'
+import ScoreSort from '@/components/ScoreSort'
 
 // option を追加するとき VIEWS だけ変えればよい → 一元管理できる
 const VIEWS = [
     { value: 'TaxCalculator', label: '税込価格計算' },
     { value: 'BmiCalculator', label: 'BMI計算' },
     { value: 'SplitCalculator', label: '割り勘計算' },
+    { value: 'ScoreSort', label: '成績ソート' },
   ] as const // as const をつけるとリテラル型になる（value と label は文字列のまま、string にはならない）
 type ViewType = typeof VIEWS[number]['value']
 // VIEWS            → オブジェクトの配列
 // VIEWS[number]    → 配列の各オブジェクト  { value: '...', label: '...' }
 // VIEWS[number]['value'] → 各オブジェクトの value プロパティだけ
+
 const isView = (v: string): v is ViewType => VIEWS.some((view) => view.value === v) // 文字列 v が VIEWS の value のどれかと一致するかをチェックする関数
+
+const VIEW_COMPONENTS: Record<ViewType, ReactElement> = {
+  TaxCalculator: <TaxCalculator />,
+  BmiCalculator: <BmiCalculator />,
+  SplitCalculator: <SplitCalculator />,
+  ScoreSort: <ScoreSort />
+}
 
 function App() {
   const [showElement, setShowElement] = useState<ViewType>('TaxCalculator')
@@ -34,7 +44,7 @@ function App() {
             ))}
           </select>
       </div>
-      {showElement === 'BmiCalculator' ? <BmiCalculator /> : showElement === 'SplitCalculator' ? <SplitCalculator /> : <TaxCalculator /> }
+      {VIEW_COMPONENTS[showElement]}
     </div>
   )
 }
