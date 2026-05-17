@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06 男女比ランキング</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="p-4">
+    <h1 class="text-2xl font-bold mb-6 text-center">男女比ランキング</h1>
+    <div class="m-auto md:max-w-xs grid gap-4">
+      <p class="text-sm text-gray-500 text-center">2020年の調査を元に作成されます</p>
+      <button type="button" id="maleRankingSubmit" class="btn btn-primary font-bold text-base bg-sky-600">男性比率ランキングを見る</button>
+      <button type="button" id="femaleRankingSubmit" class="btn btn-primary font-bold text-base bg-sky-600">女性比率ランキングを見る</button>
+    </div>
+    <div id="result" class="m-auto md:max-w-lg mt-6">
+    </div>
+  </div>
+</body>
+</html>
