@@ -16,18 +16,29 @@
 // コードの構成
 // 1. HTMLの要素を取得
 // 2. jsonからデータを取得
-// 3. 各関数を作成
+// 3. 定数を定義
+// 4. 各関数を作成
 //  - 比率計算関数
 //  - 比率追加関数
 //  - ソート関数
 //  - テーブル描画関数
 //  - ランキングテーブル作成関数
-// 4. ページが読み込まれたら男性ランキングを表示
-// 5. ボタンがクリックされたときの処理
+// 5. ページが読み込まれたら男性ランキングを表示
+// 6. ボタンがクリックされたときの処理
+
+// 各関数の役割と関係
+// 比率計算 ratioCalculate() 男性総数もしくは女性総数 / 総数 * 100 の計算のみを行う
+// 比率追加 addRatioToData() ratioCalculate() を呼び出して結果を配列の末尾に追加
+//  - 比率計算 ratioCalculate()
+// ランキングテーブル作成 createRankingTable() 各関数を呼び出してランキングテーブルを作成 各関数のファサード関数
+//  - 比率追加 addRatioToData()
+//  - ソート sortByValueDescending()
+//  - テーブル描画 renderTable()
 
 // 1. HTMLの要素を取得
 /** @type {HTMLButtonElement | null} */
 const maleRankingButton = document.querySelector("#maleRankingSubmit");
+/** @type {HTMLButtonElement | null} */
 const femaleRankingButton = document.querySelector("#femaleRankingSubmit");
 /** @type {HTMLDivElement | null} */
 const result = document.querySelector("#result");
@@ -38,7 +49,6 @@ async function fetchCensusData() {
     const response = await fetch("data.json");
     if (!response.ok) {
       throw new Error(`HTTP: ${response.status}`);
-      return null;
     }
     const data = await response.json();
     return data;
@@ -48,7 +58,13 @@ async function fetchCensusData() {
   }
 }
 
-// 3. 各関数を作成
+// 3. 定数を定義
+const MALE_RATIO_INDEX = 7;
+const FEMALE_RATIO_INDEX = 8;
+const MALE_RATIO = 1;
+const FEMALE_RATIO = 2;
+
+// 4. 各関数を作成
 /**
  * 比率計算
  * @param {string} part 分子
@@ -57,13 +73,13 @@ async function fetchCensusData() {
  */
 function ratioCalculate (part, total) {
   const ratio = (parseInt(part, 10) / parseInt(total, 10)) * 100;
-  return ratio.toFixed(1).toString(10);
+  return ratio.toFixed(1);
 }
 
 /**
  * 比率追加
- * @param {array} array 配列データ
- * @returns {array} 比率追加後の配列
+ * @param {Array} array 配列データ
+ * @returns {Array} 比率追加後の配列
  */
 function addRatioToData (array) {
   return [...array].map((item) => {
@@ -78,9 +94,9 @@ function addRatioToData (array) {
 
 /**
  * ソート
- * @param {array} array 配列データ
+ * @param {Array} array 配列データ
  * @param {number} index ソート対象のインデックス
- * @returns {array} ソート後の配列
+ * @returns {Array} ソート後の配列
  */
 function sortByValueDescending (array, index) {
   const sortedArray = [...array].sort((a, b) => b[index] - a[index]);
@@ -89,7 +105,7 @@ function sortByValueDescending (array, index) {
 
 /**
  * テーブル描画
- * @param {array} sortedArray ソート後の配列データ
+ * @param {Array} sortedArray ソート後の配列データ
  * @param {number} ratioIndex 比率インデックス 1: 男性比率 2: 女性比率
  */
 function renderTable (sortedArray, ratioIndex) {
@@ -108,16 +124,8 @@ function renderTable (sortedArray, ratioIndex) {
   ratioHeader.textContent = "比率";
   headerRow.append(rankHeader, areaHeader, ratioHeader);
   tableElement.appendChild(headerRow);
-  const title = document.createElement("h2");
-  title.setAttribute("class", "text-lg font-bold mb-6 text-center pt-8");
-  result.appendChild(title);
-  if (ratioIndex === 1) {
-    title.textContent = "男性比率ランキング";
-  } else if (ratioIndex === 2) {
-    title.textContent = "女性比率ランキング";
-  }
   result.appendChild(tableElement);
-  sortedArray.map((item, index) => {
+  sortedArray.forEach((item, index) => {
     const row = document.createElement("tr");
     row.setAttribute("class", "border-b border-gray-200")
     const rankCell = document.createElement("td");
@@ -128,7 +136,11 @@ function renderTable (sortedArray, ratioIndex) {
     ratioCell.setAttribute("class", "p-2");
     rankCell.textContent = `${index + 1}位`;
     areaCell.textContent = item[0];
-    ratioIndex === 1 ? ratioCell.textContent = `${item[7]}%` : ratioIndex === 2 ? ratioCell.textContent = `${item[8]}%` : ratioCell.textContent = "";
+    if (ratioIndex === 1) {
+      ratioCell.textContent = `${item[7]}%`;
+    } else {
+      ratioCell.textContent = `${item[8]}%`;
+    }
     row.append(rankCell, areaCell, ratioCell);
     tableElement.appendChild(row);
   });
@@ -136,7 +148,7 @@ function renderTable (sortedArray, ratioIndex) {
 
 /**
  * ランキングテーブル作成
- * @param {array} array 配列データ
+ * @param {Array} array 配列データ
  * @param {number} index ソート対象のインデックス
  * @param {number} ratioIndex 比率インデックス 1: 男性比率 2: 女性比率
  */
@@ -145,22 +157,29 @@ function createRankingTable (array, index, ratioIndex) {
 
   const ratioAddedData = addRatioToData(array);
   const sortedData = sortByValueDescending(ratioAddedData, index);
+  const title = document.createElement("h2");
+  title.setAttribute("class", "text-lg font-bold mb-6 text-center pt-8");
+  result.appendChild(title);
+  if (ratioIndex === 1) {
+    title.textContent = "男性比率ランキング";
+  } else if (ratioIndex === 2) {
+    title.textContent = "女性比率ランキング";
+  }
   renderTable(sortedData, ratioIndex);
 }
 
-// 4. ページが読み込まれたら男性ランキングを表示
+// 5. ページが読み込まれたら男性ランキングを表示
+let censusData = null; // await はトップレベルでは（モジュール形式でない場合）使えないため、変数を宣言するだけ
 window.addEventListener("DOMContentLoaded", async () => {
-  const censusData = await fetchCensusData(); // データ取得
-  createRankingTable(censusData, 7, 1);
+  censusData = await fetchCensusData(); // ここでデータ取得 以降データ使い回し
+  createRankingTable(censusData, MALE_RATIO_INDEX, MALE_RATIO);
 });
 
-// 5. ボタンがクリックされたときの処理
-maleRankingButton.addEventListener("click", async () => {
-  const censusData = await fetchCensusData(); // データ取得
-  createRankingTable(censusData, 7, 1);
+// 6. ボタンがクリックされたときの処理
+maleRankingButton.addEventListener("click", () => {
+  createRankingTable(censusData, MALE_RATIO_INDEX, MALE_RATIO);
 });
 
-femaleRankingButton.addEventListener("click", async () => {
-  const censusData = await fetchCensusData(); // データ取得
-  createRankingTable(censusData, 8, 2);
+femaleRankingButton.addEventListener("click", () => {
+  createRankingTable(censusData, FEMALE_RATIO_INDEX, FEMALE_RATIO);
 });
