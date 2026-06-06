@@ -7,15 +7,26 @@
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css">
   <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js" defer></script>
+  <script src="main.js" defer></script>
 </head>
 <body>
   <div class="m-auto max-w-sm p-4">
-    <h1 class="text-2xl font-bold mb-6">ストップウォッチを作ろう 課題一覧</h1>
+    <h1 class="text-2xl font-bold mb-4">ストップウォッチを作ろう <br>課題一覧</h1>
     <ul>
       <li><a href="practice01.html" class="text-blue-500 hover:text-blue-700 underline">シンプルな時計</a></li>
       <li><a href="practice02.html" class="text-blue-500 hover:text-blue-700 underline">1秒ごとにカウントアップ</a></li>
       <li><a href="practice03.html" class="text-blue-500 hover:text-blue-700 underline">1秒ごとに経過秒を表示</a></li>
     </ul>
+  </div>
+  <div class="m-auto max-w-lg p-4">
+    <div class="mt-6">
+      <p class="text-6xl text-gray-600 font-bold text-center font-sans"><span id="hour"></span>:<span id="minute"></span>:<span id="second"></span></p>
+    </div>
+    <div class="control flex justify-center items-center gap-4 text-center mt-4">
+      <button id="startButton" type="button" class="size-fit bg-sky-600 text-white font-bold py-2 px-6 rounded-md hover:bg-sky-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">スタート</button>
+      <button id="stopButton" type="button" class="size-fit bg-orange-600 text-white font-bold py-2 px-6 rounded-md hover:bg-orange-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">ストップ</button>
+      <button id="resetButton" type="reset" class="size-fit bg-gray-500 text-white font-bold py-2 px-6 rounded-md hover:bg-gray-600 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-500">リセット</button>
+    </div>
   </div>
 </body>
 </html>
