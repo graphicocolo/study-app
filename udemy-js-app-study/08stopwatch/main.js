@@ -20,6 +20,7 @@ const resetButton = document.querySelector("#resetButton");
 
 // 2. 変数・定数・初期値定義
 let intervalId = null;
+let timeStart = 0; // スタート時間
 let pausedElapsedMs = 0; // ストップ時点での経過時間
 
 // 3. 関数定義
@@ -36,10 +37,9 @@ function startWatch () {
   if (intervalId !== null) return;
 
   // 単位を揃えて現在の時間から経過時間を引く
-  const timeStart = Date.now() - pausedElapsedMs;
+  timeStart = Date.now() - pausedElapsedMs;
   intervalId = setInterval(() => {
-    const diffMs = Date.now() - timeStart;
-    pausedElapsedMs = diffMs;
+    const diffMs = Date.now() - timeStart; // インターバルごとの経過時間（ミリ秒）
     const totalSeconds = Math.floor(diffMs / 1000); // 経過時間をミリ秒から秒へ
     // ストップウォッチの最大計測時間を設定 ストップウォッチは 01:00:00 で止まる
     // 00:59:59 で止めたい場合は、totalSeconds >= 3600 とする
@@ -61,7 +61,7 @@ function startWatch () {
 // ストップウォッチをストップ
 function stopWatch () {
   if (intervalId === null) return;
-
+  pausedElapsedMs = Date.now() - timeStart; // ストップした時点での経過時間
   clearInterval(intervalId);
   intervalId = null;
 }
