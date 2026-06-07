@@ -80,3 +80,5 @@ function setButtonState(state) {
 
 ## 詰まった点
 
+- 10秒を超えた時点で、ミリ秒と秒のカウントが同じになってしまう
+- 各ボタン `disabled` の時に、押せないような見た目にしたい（cursor の pointer を外す）
