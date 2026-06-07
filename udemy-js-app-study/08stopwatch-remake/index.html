@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ストップウォッチを作ろう リメイク</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/basecoat.cdn.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/basecoat-css@0.3.11/dist/js/all.min.js" defer></script>
+  <script src="main.js" defer></script>
+</head>
+<body>
+  <div class="m-auto max-w-sm p-4">
+    <h1 class="text-2xl font-bold mb-4">ストップウォッチを作ろう リメイク</h1>
+  </div>
+  <div class="m-auto max-w-lg p-4">
+    <div class="mt-6">
+      <p class="text-6xl text-gray-600 font-bold text-center font-sans"><span id="minute"></span>:<span id="second"></span>:<span id="millsecond"></span></p>
+    </div>
+    <div class="control flex justify-center items-center gap-4 text-center mt-4">
+      <button id="startButton" type="button" class="size-fit bg-sky-600 text-white font-bold py-2 px-6 rounded-md hover:bg-sky-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">スタート</button>
+      <button id="stopButton" type="button" class="size-fit bg-orange-600 text-white font-bold py-2 px-6 rounded-md hover:bg-orange-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">ストップ</button>
+      <button id="resetButton" type="reset" class="size-fit bg-gray-500 text-white font-bold py-2 px-6 rounded-md hover:bg-gray-600 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-500">リセット</button>
+    </div>
+  </div>
+</body>
+</html>
