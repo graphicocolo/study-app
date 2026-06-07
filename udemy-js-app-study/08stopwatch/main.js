@@ -20,61 +20,60 @@ const resetButton = document.querySelector("#resetButton");
 
 // 2. 変数・定数・初期値定義
 let intervalId = null;
+let pausedElapsedMs = 0; // ストップ時点での経過時間
 
 // 3. 関数定義
-// 時間表示初期化
-function initialDisplay () {
+// 時間初期化
+function initialTimes () {
   hourDisplay.textContent = "00";
   minuteDisplay.textContent = "00";
   secondDisplay.textContent = "00";
 }
-initialDisplay();
-function startWatch (timeStart) {
-  // const timeStart = Date.now();
-  if (intervalId === null) {
-    intervalId = setInterval(() => {
-      const diffMs = Date.now() - timeStart;
-      const totalSeconds = Math.floor(diffMs / 1000); // 経過時間をミリ秒から秒へ
-      if (totalSeconds > 3600) {
-      // if (totalSeconds > 10) {
-        stopWatch();
-        intervalId = null;
-        return;
-      }
-      // 時間を算出
-      const hours = Math.floor(totalSeconds / 3600);
-      // 3600 = 60秒（1分）× 60分（1時間）で割ると1時間未満の秒数が算出
-      // さらにその秒数を60で割って分を出す
-      const minutes = Math.floor((totalSeconds % 3600) / 60);
-      const seconds = totalSeconds % 60;
-      hourDisplay.textContent = hours.toString().padStart(2, "0");
-      minuteDisplay.textContent = minutes.toString().padStart(2, "0");
-      secondDisplay.textContent = seconds.toString().padStart(2, "0");
-      // console.log(typeof intervalId);
-    }, 1000);
-  }
+initialTimes();
+
+// ストップウォッチをスタート
+function startWatch () {
+  if (intervalId !== null) return;
+
+  // 単位を揃えて現在の時間から経過時間を引く
+  const timeStart = Date.now() - pausedElapsedMs;
+  intervalId = setInterval(() => {
+    const diffMs = Date.now() - timeStart;
+    pausedElapsedMs = diffMs;
+    const totalSeconds = Math.floor(diffMs / 1000); // 経過時間をミリ秒から秒へ
+    // ストップウォッチの最大計測時間を設定 ストップウォッチは 01:00:00 で止まる
+    // 00:59:59 で止めたい場合は、totalSeconds >= 3600 とする
+    if (totalSeconds > 3600) {
+      stopWatch();
+      return;
+    }
+    // 時間を算出
+    const hours = Math.floor(totalSeconds / 3600);
+    // 3600 = 60秒（1分）× 60分（1時間）で割ると1時間未満の秒数が算出
+    // さらにその秒数を60で割って分を出す
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    hourDisplay.textContent = hours.toString().padStart(2, "0");
+    minuteDisplay.textContent = minutes.toString().padStart(2, "0");
+    secondDisplay.textContent = seconds.toString().padStart(2, "0");
+  }, 1000);
 }
+// ストップウォッチをストップ
 function stopWatch () {
-  if (intervalId !== null) {
-    clearInterval(intervalId);
-    intervalId = null;
-  }
+  if (intervalId === null) return;
+
+  clearInterval(intervalId);
+  intervalId = null;
 }
-// 一度ストップボタンを押した後、再度スタートボタンを押すと時間がリセットされてしまう
-// ストップ時のカウントを保持したまま再度カウントをスタートさせるにはどうしたら良いか
+// リセットのファサード
+function resetWatch () {
+  stopWatch();
+  initialTimes();
+  pausedElapsedMs = 0;
+}
 
 // 4. イベントハンドラ
-startButton.addEventListener("click", () => {
-  const timeStart = Date.now();
-  startWatch(timeStart);
-});
-stopButton.addEventListener("click", () => {
-  stopWatch();
-});
-resetButton.addEventListener("click", () => {
-  stopWatch();
-  initialDisplay();
-});
-window.addEventListener("beforeunload", () => {
-  clearInterval(intervalId);
-});
+startButton.addEventListener("click", startWatch); // startWatchには()をつけない（()ありだと登録時点で実行されてしまうため）
+stopButton.addEventListener("click", stopWatch);
+resetButton.addEventListener("click", resetWatch);
+window.addEventListener("beforeunload", resetWatch);
