@@ -31,28 +31,27 @@ function setButtonState(state) {
   resetButton.disabled = state === "initial";
 }
 
-// 初期化
-function initialTimesAndButton () {
+// 時間表示初期化
+function initialTimes () {
   minuteDisplay.textContent = "00";
   secondDisplay.textContent = "00";
   millSecondDisplay.textContent = "00";
-  setButtonState("initial");
 }
-initialTimesAndButton();
+
+// 時間表示とボタン状態を初期化
+initialTimes();
+setButtonState("initial");
 
 // ストップウォッチをスタート
 function startWatch () {
   if (intervalId !== null) return;
-
-  // ボタン状態を変更
-  setButtonState("measuring");
+  
   // 単位を揃えて現在の時間から経過時間を引く
   timeStart = Date.now() - pausedElapsedMs;
   intervalId = setInterval(() => {
     const diffMs = Date.now() - timeStart; // インターバルごとの経過時間（ミリ秒）
     const totalSeconds = Math.floor(diffMs / 1000); // 経過時間をミリ秒から秒へ
-    // ストップウォッチの最大計測時間を設定 ストップウォッチは 01:00:00 で止まる
-    // 00:59:59 で止めたい場合は、totalSeconds >= 3600 とする
+    // ストップウォッチの最大計測時間を設定 ストップウォッチは 60:00:00 で止まる
     if (totalSeconds > 3600) {
       stopWatch();
       setButtonState("maxTime");
@@ -64,13 +63,13 @@ function startWatch () {
     // さらにその秒数を60で割って分を出す
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = totalSeconds % 60;
-    const digit = Math.floor(Math.log10(diffMs)) + 1;
-    const millSeconds = Math.floor(diffMs / Math.pow(10, digit - 2));
+    const millSeconds = Math.floor((diffMs % 1000) / 10);
     minuteDisplay.textContent = minutes.toString().padStart(2, "0");
     secondDisplay.textContent = seconds.toString().padStart(2, "0");
     millSecondDisplay.textContent = millSeconds.toString().padStart(2, "0");
   }, 10);
 }
+
 // ストップウォッチをストップ
 function stopWatch () {
   if (intervalId === null) return;
@@ -78,18 +77,25 @@ function stopWatch () {
   clearInterval(intervalId);
   intervalId = null;
 }
+
 // リセットのファサード
 function resetWatch () {
   stopWatch();
-  initialTimesAndButton();
+  initialTimes();
   pausedElapsedMs = 0;
 }
 
-// 4. イベントハンドラ
-startButton.addEventListener("click", startWatch); // startWatchには()をつけない（()ありだと登録時点で実行されてしまうため）
+// 4. イベントハンドラ setButtonState() を管理
+startButton.addEventListener("click", () => {
+  startWatch();
+  setButtonState("measuring");
+});
 stopButton.addEventListener("click", () => {
   stopWatch();
   setButtonState("stopped");
 });
-resetButton.addEventListener("click", resetWatch);
-window.addEventListener("beforeunload", resetWatch);
+resetButton.addEventListener("click", () => {
+  resetWatch();
+  setButtonState("initial");
+});
+window.addEventListener("beforeunload", resetWatch); // resetWatch には()をつけない（()ありだと登録時点で実行されてしまうため）

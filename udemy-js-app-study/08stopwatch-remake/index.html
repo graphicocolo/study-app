@@ -15,12 +15,12 @@
   </div>
   <div class="m-auto max-w-lg p-4">
     <div class="mt-6">
-      <p class="text-6xl text-gray-600 font-bold text-center font-sans"><span id="minute"></span>:<span id="second"></span>:<span id="millsecond"></span></p>
+      <p class="text-6xl text-gray-600 font-bold text-center font-sans"><span id="minute" class="tabular-nums"></span><span class="tabular-nums">:</span><span id="second" class="tabular-nums"></span><span class="tabular-nums">:</span><span id="millsecond" class="tabular-nums"></span></p>
     </div>
     <div class="control flex justify-center items-center gap-4 text-center mt-4">
-      <button id="startButton" type="button" class="size-fit bg-sky-600 text-white font-bold py-2 px-6 rounded-md hover:bg-sky-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">スタート</button>
-      <button id="stopButton" type="button" class="size-fit bg-orange-600 text-white font-bold py-2 px-6 rounded-md hover:bg-orange-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500">ストップ</button>
-      <button id="resetButton" type="reset" class="size-fit bg-gray-500 text-white font-bold py-2 px-6 rounded-md hover:bg-gray-600 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-500">リセット</button>
+      <button id="startButton" type="button" class="size-fit bg-sky-600 text-white font-bold py-2 px-6 rounded-md hover:bg-sky-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-auto disabled:bg-sky-200">スタート</button>
+      <button id="stopButton" type="button" class="size-fit bg-orange-600 text-white font-bold py-2 px-6 rounded-md hover:bg-orange-700 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-auto disabled:bg-orange-300 ">ストップ</button>
+      <button id="resetButton" type="reset" class="size-fit bg-gray-500 text-white font-bold py-2 px-6 rounded-md hover:bg-gray-600 hover:cursor-pointer focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:cursor-auto disabled:bg-gray-300">リセット</button>
     </div>
   </div>
 </body>
