@@ -3,6 +3,7 @@ import TaxCalculator from '@/components/TaxCalculator'
 import BmiCalculator from '@/components/BmiCalculator'
 import SplitCalculator from '@/components/SplitCalculator'
 import ScoreSort from '@/components/ScoreSort'
+import Study01Jsx from '@/components/Study01Jsx'
 
 // option を追加するとき VIEWS だけ変えればよい → 一元管理できる
 const VIEWS = [
@@ -10,6 +11,7 @@ const VIEWS = [
     { value: 'BmiCalculator', label: 'BMI計算' },
     { value: 'SplitCalculator', label: '割り勘計算' },
     { value: 'ScoreSort', label: '成績ソート' },
+    { value: 'Study01Jsx', label: 'studyloadmap Reactの基本 JSX の書き方' },
   ] as const // as const をつけるとリテラル型になる（value と label は文字列のまま、string にはならない）
 type ViewType = typeof VIEWS[number]['value']
 // VIEWS            → オブジェクトの配列
@@ -22,7 +24,8 @@ const VIEW_COMPONENTS: Record<ViewType, ReactElement> = {
   TaxCalculator: <TaxCalculator />,
   BmiCalculator: <BmiCalculator />,
   SplitCalculator: <SplitCalculator />,
-  ScoreSort: <ScoreSort />
+  ScoreSort: <ScoreSort />,
+  Study01Jsx: <Study01Jsx />,
 }
 
 function App() {
