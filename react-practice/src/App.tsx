@@ -6,6 +6,7 @@ import ScoreSort from '@/components/ScoreSort'
 import Study01Jsx from '@/components/Study01Jsx'
 import Study02Props from '@/components/Study02Props'
 import Study03UseState from '@/components/Study03UseState'
+import Study04UseEffect from '@/components/Study04UseEffect'
 
 // option を追加するとき VIEWS だけ変えればよい → 一元管理できる
 const VIEWS = [
@@ -13,9 +14,10 @@ const VIEWS = [
     { value: 'BmiCalculator', label: 'BMI計算' },
     { value: 'SplitCalculator', label: '割り勘計算' },
     { value: 'ScoreSort', label: '成績ソート' },
-    { value: 'Study01Jsx', label: 'studyloadmap Reactの基本 JSX の書き方' },
-    { value: 'Study02Props', label: 'studyloadmap Reactの基本 コンポーネントの分割（props の受け渡し）' },
-    { value: 'Study03UseState', label: 'studyloadmap Reactの基本 useState で状態管理' },
+    { value: 'Study01Jsx', label: 'studyroadmap Reactの基本 JSX の書き方' },
+    { value: 'Study02Props', label: 'studyroadmap Reactの基本 コンポーネントの分割（props の受け渡し）' },
+    { value: 'Study03UseState', label: 'studyroadmap Reactの基本 useState で状態管理' },
+    { value: 'Study04UseEffect', label: 'studyroadmap Reactの基本 useEffect で副作用処理' },
   ] as const // as const をつけるとリテラル型になる（value と label は文字列のまま、string にはならない）
 type ViewType = typeof VIEWS[number]['value']
 // VIEWS            → オブジェクトの配列
@@ -32,6 +34,7 @@ const VIEW_COMPONENTS: Record<ViewType, ReactElement> = {
   Study01Jsx: <Study01Jsx />,
   Study02Props: <Study02Props />,
   Study03UseState: <Study03UseState />,
+  Study04UseEffect: <Study04UseEffect />,
 }
 
 function App() {
